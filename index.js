@@ -35,7 +35,12 @@ var alice_stream = ServerStream(function (err, stream) {
     S(
         stream,
         S.map(buf => buf.toString()),
-        S.log()
+        S.drain(msg => console.log('in alice, the server -- ', msg))
+    )
+
+    S(
+        S.values(['baz', 'clam']),
+        stream
     )
 })
 
@@ -47,10 +52,12 @@ var bob_stream = ClientStream(alice.publicKey, function (err, stream) {
         S.values(['foo', 'bar']),
         stream
     )
-    // S(
-    //     stream,
-    //     S.log()
-    // )
+
+    S(
+        stream,
+        S.map(buf => buf.toString()),
+        S.drain(msg => console.log('in bob the client -- ', msg))
+    )
 })
 
 //simulate a streaming network connection by connecting streams together
